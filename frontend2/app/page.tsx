@@ -1,188 +1,189 @@
-import { useId, useMemo, useState } from 'react'
-import './App.css'
+"use client";
 
-type UserRole = 'ADMIN' | 'CUSTOMER'
+import { useId, useMemo, useState } from "react";
+
+type UserRole = "ADMIN" | "CUSTOMER";
 
 type Product = {
-  id: number
-  name: string
-  category: string
-  price: number
-  stockCount: number
-  rating: number
-  imageUrl: string
-}
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  stockCount: number;
+  rating: number;
+  imageUrl: string;
+};
 
 type User = {
-  name: string
-  email: string
-  role: UserRole
-}
+  name: string;
+  email: string;
+  role: UserRole;
+};
 
 const initialProducts: Product[] = [
   {
     id: 1,
-    name: 'Nimbus Carry Backpack',
-    category: 'Accessories',
+    name: "Nimbus Carry Backpack",
+    category: "Accessories",
     price: 89,
     stockCount: 24,
     rating: 4.8,
     imageUrl:
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80',
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
   },
   {
     id: 2,
-    name: 'Monolith Desk Lamp',
-    category: 'Home',
+    name: "Monolith Desk Lamp",
+    category: "Home",
     price: 64,
     stockCount: 0,
     rating: 4.4,
     imageUrl:
-      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80',
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80",
   },
   {
     id: 3,
-    name: 'Aero Knit Sneakers',
-    category: 'Footwear',
+    name: "Aero Knit Sneakers",
+    category: "Footwear",
     price: 118,
     stockCount: 17,
     rating: 4.9,
     imageUrl:
-      'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=900&q=80',
+      "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=900&q=80",
   },
   {
     id: 4,
-    name: 'Luma Ceramic Bottle',
-    category: 'Lifestyle',
+    name: "Luma Ceramic Bottle",
+    category: "Lifestyle",
     price: 32,
     stockCount: 8,
     rating: 4.5,
     imageUrl:
-      'https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=900&q=80',
+      "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=900&q=80",
   },
   {
     id: 5,
-    name: 'Atlas Wool Coat',
-    category: 'Apparel',
+    name: "Atlas Wool Coat",
+    category: "Apparel",
     price: 210,
     stockCount: 5,
     rating: 4.7,
     imageUrl:
-      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80',
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80",
   },
   {
     id: 6,
-    name: 'Signal Wireless Speaker',
-    category: 'Electronics',
+    name: "Signal Wireless Speaker",
+    category: "Electronics",
     price: 142,
     stockCount: 13,
     rating: 4.6,
     imageUrl:
-      'https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=900&q=80',
+      "https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=900&q=80",
   },
-]
+];
 
 const usersByRole: Record<UserRole, User> = {
   CUSTOMER: {
-    name: 'Ava Carter',
-    email: 'ava@example.com',
-    role: 'CUSTOMER',
+    name: "Ava Carter",
+    email: "ava@example.com",
+    role: "CUSTOMER",
   },
   ADMIN: {
-    name: 'Milo Hart',
-    email: 'milo@example.com',
-    role: 'ADMIN',
+    name: "Milo Hart",
+    email: "milo@example.com",
+    role: "ADMIN",
   },
-}
+};
 
 const emptyDraft = {
-  name: '',
-  category: 'Accessories',
-  price: '0',
-  stockCount: '0',
+  name: "",
+  category: "Accessories",
+  price: "0",
+  stockCount: "0",
   imageUrl:
-    'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80',
-}
+    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80",
+};
 
-type ProductDraft = typeof emptyDraft
+type ProductDraft = typeof emptyDraft;
 
 function formatPrice(price: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
     maximumFractionDigits: 0,
-  }).format(price)
+  }).format(price);
 }
 
 function renderStars(rating: number) {
-  const filled = Math.round(rating)
+  const filled = Math.round(rating);
   return Array.from({ length: 5 }, (_, index) =>
-    index < filled ? '\u2605' : '\u2606',
-  ).join('')
+    index < filled ? "\u2605" : "\u2606",
+  ).join("");
 }
 
-function App() {
-  const [products, setProducts] = useState(initialProducts)
-  const [role, setRole] = useState<UserRole>('CUSTOMER')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('All Categories')
-  const [cartCount, setCartCount] = useState(0)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingProductId, setEditingProductId] = useState<number | null>(null)
-  const [draft, setDraft] = useState<ProductDraft>(emptyDraft)
-  const categorySelectId = useId()
-  const searchInputId = useId()
+export default function Home() {
+  const [products, setProducts] = useState(initialProducts);
+  const [role, setRole] = useState<UserRole>("CUSTOMER");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [cartCount, setCartCount] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProductId, setEditingProductId] = useState<number | null>(null);
+  const [draft, setDraft] = useState<ProductDraft>(emptyDraft);
+  const categorySelectId = useId();
+  const searchInputId = useId();
 
-  const currentUser = usersByRole[role]
+  const currentUser = usersByRole[role];
   const categories = useMemo(
-    () => ['All Categories', ...new Set(products.map((product) => product.category))],
+    () => ["All Categories", ...new Set(products.map((product) => product.category))],
     [products],
-  )
+  );
 
   const filteredProducts = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase()
+    const normalizedSearch = searchTerm.trim().toLowerCase();
 
     return products.filter((product) => {
       const matchesSearch =
         normalizedSearch.length === 0 ||
         product.name.toLowerCase().includes(normalizedSearch) ||
-        product.category.toLowerCase().includes(normalizedSearch)
+        product.category.toLowerCase().includes(normalizedSearch);
       const matchesCategory =
-        selectedCategory === 'All Categories' || product.category === selectedCategory
+        selectedCategory === "All Categories" || product.category === selectedCategory;
 
-      return matchesSearch && matchesCategory
-    })
-  }, [products, searchTerm, selectedCategory])
+      return matchesSearch && matchesCategory;
+    });
+  }, [products, searchTerm, selectedCategory]);
 
   const openAddModal = () => {
-    setEditingProductId(null)
-    setDraft(emptyDraft)
-    setIsModalOpen(true)
-  }
+    setEditingProductId(null);
+    setDraft(emptyDraft);
+    setIsModalOpen(true);
+  };
 
   const openEditModal = (product: Product) => {
-    setEditingProductId(product.id)
+    setEditingProductId(product.id);
     setDraft({
       name: product.name,
       category: product.category,
       price: String(product.price),
       stockCount: String(product.stockCount),
       imageUrl: product.imageUrl,
-    })
-    setIsModalOpen(true)
-  }
+    });
+    setIsModalOpen(true);
+  };
 
   const closeModal = () => {
-    setIsModalOpen(false)
-    setEditingProductId(null)
-  }
+    setIsModalOpen(false);
+    setEditingProductId(null);
+  };
 
   const handleDraftChange = (field: keyof ProductDraft, value: string) => {
-    setDraft((current) => ({ ...current, [field]: value }))
-  }
+    setDraft((current) => ({ ...current, [field]: value }));
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+    event.preventDefault();
 
     const nextProduct = {
       id: editingProductId ?? Date.now(),
@@ -194,29 +195,29 @@ function App() {
         ? products.find((product) => product.id === editingProductId)?.rating ?? 4.5
         : 4.5,
       imageUrl: draft.imageUrl.trim(),
-    }
+    };
 
     if (editingProductId) {
       setProducts((current) =>
         current.map((product) =>
           product.id === editingProductId ? nextProduct : product,
         ),
-      )
+      );
     } else {
-      setProducts((current) => [nextProduct, ...current])
+      setProducts((current) => [nextProduct, ...current]);
     }
 
-    closeModal()
-  }
+    closeModal();
+  };
 
   const handleDelete = (productId: number) => {
-    setProducts((current) => current.filter((product) => product.id !== productId))
-  }
+    setProducts((current) => current.filter((product) => product.id !== productId));
+  };
 
   const clearFilters = () => {
-    setSearchTerm('')
-    setSelectedCategory('All Categories')
-  }
+    setSearchTerm("");
+    setSelectedCategory("All Categories");
+  };
 
   return (
     <div className="app-shell">
@@ -231,15 +232,15 @@ function App() {
         <div className="role-toggle" aria-label="Role switcher">
           <button
             type="button"
-            className={role === 'CUSTOMER' ? 'is-active' : ''}
-            onClick={() => setRole('CUSTOMER')}
+            className={role === "CUSTOMER" ? "is-active" : ""}
+            onClick={() => setRole("CUSTOMER")}
           >
             Customer
           </button>
           <button
             type="button"
-            className={role === 'ADMIN' ? 'is-active' : ''}
-            onClick={() => setRole('ADMIN')}
+            className={role === "ADMIN" ? "is-active" : ""}
+            onClick={() => setRole("ADMIN")}
           >
             Admin
           </button>
@@ -310,7 +311,7 @@ function App() {
               <span>Cart</span>
               <strong>{cartCount} items</strong>
             </div>
-            {currentUser.role === 'ADMIN' ? (
+            {currentUser.role === "ADMIN" ? (
               <button type="button" className="primary-button" onClick={openAddModal}>
                 + Add New Product
               </button>
@@ -330,7 +331,7 @@ function App() {
         ) : (
           <section className="product-grid" aria-label="Product Catalog">
             {filteredProducts.map((product) => {
-              const inStock = product.stockCount > 0
+              const inStock = product.stockCount > 0;
 
               return (
                 <article key={product.id} className="product-card card-surface">
@@ -350,9 +351,9 @@ function App() {
                     <div className="price-row">
                       <strong>{formatPrice(product.price)}</strong>
                       <span
-                        className={inStock ? 'status-badge in-stock' : 'status-badge out-of-stock'}
+                        className={inStock ? "status-badge in-stock" : "status-badge out-of-stock"}
                       >
-                        {inStock ? `In Stock · ${product.stockCount}` : 'Out of Stock'}
+                        {inStock ? `In Stock · ${product.stockCount}` : "Out of Stock"}
                       </span>
                     </div>
                   </div>
@@ -367,7 +368,7 @@ function App() {
                       Add to Cart
                     </button>
 
-                    {currentUser.role === 'ADMIN' ? (
+                    {currentUser.role === "ADMIN" ? (
                       <div className="admin-actions">
                         <button
                           type="button"
@@ -387,7 +388,7 @@ function App() {
                     ) : null}
                   </div>
                 </article>
-              )
+              );
             })}
           </section>
         )}
@@ -406,7 +407,7 @@ function App() {
               <div>
                 <p className="eyebrow">Admin Control</p>
                 <h3 id="product-modal-title">
-                  {editingProductId ? 'Edit product' : 'Add product'}
+                  {editingProductId ? "Edit product" : "Add product"}
                 </h3>
               </div>
               <button type="button" className="ghost-button" onClick={closeModal}>
@@ -420,7 +421,7 @@ function App() {
                 <input
                   type="text"
                   value={draft.name}
-                  onChange={(event) => handleDraftChange('name', event.target.value)}
+                  onChange={(event) => handleDraftChange("name", event.target.value)}
                   required
                 />
               </label>
@@ -430,7 +431,7 @@ function App() {
                   type="number"
                   min="0"
                   value={draft.price}
-                  onChange={(event) => handleDraftChange('price', event.target.value)}
+                  onChange={(event) => handleDraftChange("price", event.target.value)}
                   required
                 />
               </label>
@@ -439,7 +440,7 @@ function App() {
                 <input
                   type="text"
                   value={draft.category}
-                  onChange={(event) => handleDraftChange('category', event.target.value)}
+                  onChange={(event) => handleDraftChange("category", event.target.value)}
                   required
                 />
               </label>
@@ -449,7 +450,7 @@ function App() {
                   type="number"
                   min="0"
                   value={draft.stockCount}
-                  onChange={(event) => handleDraftChange('stockCount', event.target.value)}
+                  onChange={(event) => handleDraftChange("stockCount", event.target.value)}
                   required
                 />
               </label>
@@ -458,7 +459,7 @@ function App() {
                 <input
                   type="url"
                   value={draft.imageUrl}
-                  onChange={(event) => handleDraftChange('imageUrl', event.target.value)}
+                  onChange={(event) => handleDraftChange("imageUrl", event.target.value)}
                   required
                 />
               </label>
@@ -468,7 +469,7 @@ function App() {
                   Cancel
                 </button>
                 <button type="submit" className="primary-button">
-                  {editingProductId ? 'Save Changes' : 'Create Product'}
+                  {editingProductId ? "Save Changes" : "Create Product"}
                 </button>
               </div>
             </form>
@@ -476,7 +477,5 @@ function App() {
         </div>
       ) : null}
     </div>
-  )
+  );
 }
-
-export default App
