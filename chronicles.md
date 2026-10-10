@@ -1,0 +1,1 @@
+Lets' first build the React Frontend and set up some basic RBAC and deploy it to GCP
